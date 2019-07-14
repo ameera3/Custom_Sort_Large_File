@@ -1,6 +1,6 @@
 # Change the CXX variable assignment at your own risk.
 CXX ?= g++ 
-CXXFLAGS=-std=c++11 -g -Wall
+CXXFLAGS=-std=c++11 -g -Wall -O2
 LDFLAGS=-g
 
 all: sortme 

@@ -70,9 +70,11 @@ void mergeFiles(const char *outFile, const char* inFile, int n, int k)
 
 		harr[i].arrNum = i; // Index of scratch output file 
 	}
-	MinHeap hp(harr, i); // Create the heap 
+	MinHeap* hp = new MinHeap(harr, i); // Create the heap 
 
 	int count = 0;
+	char* line = nullptr;
+	size_t len = 0;
 
 	// Now one by one get the minimum element from min 
 	// heap and replace it with next element. 
@@ -80,9 +82,7 @@ void mergeFiles(const char *outFile, const char* inFile, int n, int k)
 	while (count != i)
 	{
 		// Get the minimum element and store it in output file 
-		MinHeapNode root = hp.getRoot();
-		char* line = NULL;
-		size_t len = 0;
+		MinHeapNode root = hp->getRoot();
 		long fPos = root.posF;
 		fseek (origin, fPos, SEEK_SET);
 		getline(&line, &len, origin);
@@ -98,8 +98,13 @@ void mergeFiles(const char *outFile, const char* inFile, int n, int k)
 		}
 
 		// Replace root with next element of input file 
-		hp.replaceRoot(root);
+		hp->replaceRoot(root);
 	}
+
+        free(line);
+        delete[] harr;	
+
+	delete hp;
 
 	// close input and output files 
 	for (int i = 0; i < k; i++)
@@ -107,6 +112,7 @@ void mergeFiles(const char *outFile, const char* inFile, int n, int k)
 
 	fclose(out);
 	fclose(origin);
+	
 }
 
 
@@ -203,15 +209,17 @@ void createPartitions(const char* inFile, int runSize, int partitions)
 		out[i] = fopen(fileName, "w");
 	}
 
+	// number of entries in our soon to be dynamically
+	// allocated array
+        int numEntries = runSize/sizeof(std::pair<int, long>);
+
 	// allocate a dynamic array large enough 
 	// to accommodate partitions of size runSize 
-	std::pair<int, long>* arr = (std::pair<int, long> *) malloc(runSize);
-
-	int numEntries = runSize/sizeof(std::pair<int,long>);
+	std::pair<int, long>* arr = new std::pair<int, long>[numEntries];
 
 	bool moreInput = true;
 	int nextOutputFile = 0;
-	char* line = NULL;
+	char* line = nullptr;
 	size_t len = 0;
 	long position;
 	int i;
@@ -245,13 +253,14 @@ void createPartitions(const char* inFile, int runSize, int partitions)
 		nextOutputFile++;
 	}
 
+	free(line);
+        delete[] arr;
+
 	// close input and output files 
 	for (int i = 0; i < partitions; i++)
 		fclose(out[i]);
 
 	fclose(in);
-
-	free(arr);
 
 }
 

@@ -62,3 +62,4 @@ void MinHeap::exchange(MinHeapNode* a, MinHeapNode* b)
 	*b = temp;
 }
 
+MinHeap::~MinHeap() {}

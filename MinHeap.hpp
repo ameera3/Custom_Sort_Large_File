@@ -31,6 +31,8 @@ class MinHeap
 	void replaceRoot(MinHeapNode n);
 
 	void exchange(MinHeapNode* a, MinHeapNode* b);
+
+	~MinHeap();
 };
 
 #endif // MIN_HEAP_H
