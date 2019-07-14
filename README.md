@@ -27,7 +27,7 @@ then have the line consisting of 1 's' character, followed by the line consistin
 line containing 80 's' characters.
 
 There is also a handy filesize program that lets you check the size of your files. You will have to compile it separately
-with g++ -o filesize filesize.cpp. Typing "./filesize filename" outputs the size of the file.
+with g++ -o filesize filesize.cpp. Typing "./filesize filename" outputs the size of the file in bytes.
 
 Finally, there is also a handy bash script autoremove.sh that removes all your temporary scratch files. Remember to 
 chmod u+x autoremove.sh and then type ./autoremove.sh to remove the temporary scratch files.
