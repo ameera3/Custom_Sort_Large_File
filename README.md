@@ -1,7 +1,7 @@
 # Custom_Sort_Large_File
 
 ## Usage:
-To compile, type make. To run the program, type "sortme FileA File B". 
+To compile, type make. To run the program, type "./sortme FileA File B". 
 
 ## Introduction.
 The command line program named “sortme.cpp” takes in two parameters: an input filename and an output filename.
