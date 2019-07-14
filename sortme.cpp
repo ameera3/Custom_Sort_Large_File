@@ -126,8 +126,9 @@ void merge(std::pair<int, long> arr[], int l, int m, int r)
 	int n1 = m - l + 1;
 	int n2 = r - m;
 
-	/* create temp arrays */
-	std::pair<int, long> L[n1], R[n2];
+	/* dynamically allocate temp arrays */
+        std::pair<int, long>* L = new std::pair<int, long>[n1];
+	std::pair<int, long>* R = new std::pair<int, long>[n2];
 
 	/* Copy data to temp arrays L[] and R[] */
 	for(i = 0; i < n1; i++)
@@ -157,6 +158,9 @@ void merge(std::pair<int, long> arr[], int l, int m, int r)
 	   are any */
 	while(j < n2)
 		arr[k++] = R[j++];
+
+        delete[] L;
+	delete[] R;
 }
 
 /* l is for left index and r is right index of the 
