@@ -1,6 +1,6 @@
 # Custom_Sort_Large_File
 
-## Usage:
+## Usage.
 To compile, type make. To run the program, type "./sortme FileA File B". 
 
 ## Introduction.
@@ -17,13 +17,13 @@ The sort algorithm is based off the number of occurrences of the letter “s” 
 The input file is assumed to be 100x the amount of working memory available to your program. (That is, if the maximum amount 
 of memory available to the process is 1GB, the file is 100GB in size. Simply put, assume the entire contents of the file cannot be stored in memory.)
 
-## Algorithm
+## Algorithm.
 
 Dynamically allocate an array that has size 1% of the size of the original input file. For each line in the original text file, store in the array the number of "s" characters in that line as well as the position in the file where the line begins. When the array is full, sort it using merge sort according to the number of "s" characters. Next, write the sorted array to a scratch file. Repeat this process until each line of the original text file has been processed. There are 110 scratch files just in case.
 
 Finally, use a min heap to perform a k-way merge, where k is the number of scratch files to be merged. Create a min heap with k heap nodes. Every heap node contains the first element of its corresponding scratch file. Get the root from the min heap, and read in the position of the corresponding line in the original text file. Fseek to that position, get the line from the original text file, and write it to the output file. Replace the root of the min heap with the next element and reheapify. Repeat until all scratch files reach EOF.
 
-## Testing
+## Testing.
 You can test sortme on the file mylog.txt. This file has a line consisting of 80 "s" characters, followed by a line 
 consisting of 79 "s" characters, all the way down to 1 "s" character. The pattern continues for the characters, "a"-"g".
 
