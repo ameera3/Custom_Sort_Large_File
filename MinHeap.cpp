@@ -1,3 +1,8 @@
+/*
+ * Filename: MinHeap.cpp
+ * Description: Implements the methods of MinHeap class
+ */
+
 #include "MinHeap.hpp"
 #include "MinHeapNode.hpp"
 
@@ -34,27 +39,34 @@ void MinHeap::minHeapify(int j)
 	}
 }
 
+// returns position of left child in array
+// representation of heap
 int MinHeap::left(int j) 
 { 
 	return (2 * j + 1); 
 }
 
+// returns position of right child in array 
+// representation of heap
 int MinHeap::right(int j) 
 { 
 	return (2 * j + 2); 
 }
 
+// gets the roof of the min heap
 MinHeapNode MinHeap::getRoot() 
 { 
 	return heapArray[0]; 
 }
 
+// replaces the root of the heap and then reheapifys
 void MinHeap::replaceRoot(MinHeapNode n)
 {
 	heapArray[0] = n;
 	minHeapify(0);
 }
 
+// exchanges two min heap nodes
 void MinHeap::exchange(MinHeapNode* a, MinHeapNode* b) 
 {
 	MinHeapNode temp = *a;
@@ -62,4 +74,5 @@ void MinHeap::exchange(MinHeapNode* a, MinHeapNode* b)
 	*b = temp;
 }
 
+// destructor
 MinHeap::~MinHeap() {}

@@ -1,4 +1,7 @@
-// Usage: ./filesize somefile 
+/* Filename: filesize.cpp
+ * Description: Returns the filesize of filename
+ * Usage: ./filesize filename
+ */
 #include <stdio.h>
 
 int main (int argc, char** argv)

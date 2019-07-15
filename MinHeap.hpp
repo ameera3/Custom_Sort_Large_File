@@ -1,14 +1,24 @@
+/*
+ * Filename: MinHeap.hpp
+ * Description: Implements a min heap.
+ */
 
 #ifndef MIN_HEAP_HPP
 #define MIN_HEAP_HPP
 
 #include "MinHeapNode.hpp"
 
-// A class for Min Heap 
+/* Class Name: MinHeap
+ * Instance Variables: heapArray (pointer to array representation of heap)
+ *                     heapSize (number of nodes in the heap)
+ * Description: Implements a min heap.
+ * Public Methods: Constructor, minHeapify, left, right, getRoot, 
+                   replaceRoot, exchange, destructor.
+ */
 class MinHeap
 {
     MinHeapNode* heapArray; // pointer to array representation of heap 
-    int heapSize;           // size of heap 
+    int heapSize;           // number of nodes in the heap
 
     public:
 
@@ -30,8 +40,10 @@ class MinHeap
 	// Replace root with new node n and heapify() new root 
 	void replaceRoot(MinHeapNode n);
 
+	// swaps two min heap nodes
 	void exchange(MinHeapNode* a, MinHeapNode* b);
 
+	// destructor
 	~MinHeap();
 };
 

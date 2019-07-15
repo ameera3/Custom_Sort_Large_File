@@ -1,3 +1,29 @@
+/* 
+ * Filename: sortme.cpp
+ * Usage: ./sortme FileA FileB
+ * Description: The command line program named “sortme.cpp” takes in two 
+ *              parameters: an input filename and an output filename
+ *		i.e. Running “sortme FileA FileB” will result in reading 
+ *		in FileA and output to FileB.
+ *
+ *              The input file specified by the input filename should be 
+ *              a large text file having many lines of text. Each line of 
+ *		the input file is unique. The sortme program will output 
+ *		the sorted lines to the new file specified by the output 
+ *		filename.
+ *
+ *              The sort algorithm is based off the number of occurrences 
+ *              of the letter “s” on the line in ascending order. (That 
+ *              is, the line with the most number of “s” occurrences 
+ *              appears at the end of the output file.)
+ *
+ *              The input file is assumed to be 100x the amount of working 
+ *              memory available to your program. (That is, if the maximum 
+ *              amount of memory available to the process is 1GB, the file 
+ *              is 100GB in size. Simply put, assume the entire contents 
+ *              of the file cannot be stored in memory.)
+ */
+
 #include<bits/stdc++.h>
 #include <iostream>
 #include <string.h>
@@ -20,6 +46,7 @@
 
 using namespace std;
 
+/* Returns the filesize of filename */
 long filesize(const char* filename)
 {
 	FILE * pFile;
@@ -37,10 +64,13 @@ long filesize(const char* filename)
 }
 
 // Merges k sorted files. Names of files are assumed 
-// to be 1, 2, 3, ... k 
-void mergeFiles(const char *outFile, const char* inFile, int n, int k)
+// to be 1, 2, 3, ... , k
+void kWayMerge(const char *outFile, const char* inFile, int n, int k)
 {
-	FILE* in[k];
+	// array of k file pointers
+	FILE* scratch[k];
+
+        // open the k files to be merged
 	for (int i = 0; i < k; i++)
 	{
 		char fileName[4];
@@ -49,39 +79,53 @@ void mergeFiles(const char *outFile, const char* inFile, int n, int k)
 		snprintf(fileName, sizeof(fileName), "%d", i);
 
 		// Open output files in read mode. 
-		in[i] = fopen(fileName, "r");
+		scratch[i] = fopen(fileName, "r");
 	}
 
+	// original input file
         FILE* origin = fopen(inFile, "rb");
 
-	// FINAL OUTPUT FILE 
+	// final output file
 	FILE *out = fopen(outFile, "w");
 
 	// Create a min heap with k heap nodes. Every heap node 
 	// has first element of scratch output file 
-	MinHeapNode* harr = new MinHeapNode[k];
+	MinHeapNode* hpArray = new MinHeapNode[k];
 	int i;
 	for (i = 0; i < k; i++)
 	{
-		// break if output file is empty and 
-		// index i will be no. of input files 
-		if (fscanf(in[i], "%d %lu", &harr[i].sNum, &harr[i].posF) != 2)
+		/* Read in the number of s characters and the
+		 * position of the beginning of the line in the
+		 * original input file to the min heap node.
+		 * Break if output file is empty.  
+		 * Index i is number of input files
+		 */
+		if (fscanf(scratch[i], "%d %lu", &hpArray[i].sNum, 
+		    &hpArray[i].posF) != 2) {
 			break;
+                }
 
-		harr[i].arrNum = i; // Index of scratch output file 
+		// Index of scratch output file
+		hpArray[i].arrNum = i;  
 	}
-	MinHeap* hp = new MinHeap(harr, i); // Create the heap 
+
+	// Create the heap
+	MinHeap* hp = new MinHeap(hpArray, i);  
 
 	int count = 0;
 	char* line = nullptr;
 	size_t len = 0;
 
-	// Now one by one get the minimum element from min 
+	// Get the root from the min 
 	// heap and replace it with next element. 
 	// run till all filled input files reach EOF 
 	while (count != i)
 	{
-		// Get the minimum element and store it in output file 
+		/* Get the root from the min heap, and read in the position 
+		   of the corresponding line in the original text file. Fseek 
+		   to that position, get the line from the original text file, 
+		   and write it to the output file.
+		*/   
 		MinHeapNode root = hp->getRoot();
 		long fPos = root.posF;
 		fseek (origin, fPos, SEEK_SET);
@@ -91,7 +135,8 @@ void mergeFiles(const char *outFile, const char* inFile, int n, int k)
 		// Find the next element that will replace current 
 		// root of heap. The next element belongs to same 
 		// input file as the current min element. 
-		if (fscanf(in[root.arrNum], "%d %lu", &root.sNum, &root.posF) != 2 )
+		if (fscanf(scratch[root.arrNum], "%d %lu", &root.sNum, 
+					&root.posF) != 2 )
 		{
 			root.sNum = INT_MAX;
 			count++;
@@ -101,29 +146,32 @@ void mergeFiles(const char *outFile, const char* inFile, int n, int k)
 		hp->replaceRoot(root);
 	}
 
+	// no memory leaks here
         free(line);
-        delete[] harr;	
-
+        delete[] hpArray;	
 	delete hp;
 
 	// close input and output files 
 	for (int i = 0; i < k; i++)
-		fclose(in[i]);
+		fclose(scratch[i]);
 
 	fclose(out);
 	fclose(origin);
 	
 }
 
-
-
-// Merges two subarrays of arr[]. 
-// First subarray is arr[l..m] 
-// Second subarray is arr[m+1..r] 
+/* Merges two subarrays of arr[]. 
+ * First subarray is arr[l..m] 
+ * Second subarray is arr[m+1..r]
+ */
 void merge(std::pair<int, long> arr[], int l, int m, int r)
 {
 	int i, j, k;
+	
+	// size of left subarray
 	int n1 = m - l + 1;
+
+	// size of right subarray
 	int n2 = r - m;
 
 	/* dynamically allocate temp arrays */
@@ -142,6 +190,7 @@ void merge(std::pair<int, long> arr[], int l, int m, int r)
 	k = l; // Initial index of merged subarray 
 	while (i < n1 && j < n2)
 	{
+		// sort according to the number of "s" characters
 		if (L[i].first <= R[j].first)
 			arr[k++] = L[i++];
 		else
@@ -150,7 +199,6 @@ void merge(std::pair<int, long> arr[], int l, int m, int r)
 
 	/* Copy the remaining elements of L[], if there 
 	   are any */
-
 	while (i < n1)
 		arr[k++] = L[i++];
 
@@ -159,12 +207,15 @@ void merge(std::pair<int, long> arr[], int l, int m, int r)
 	while(j < n2)
 		arr[k++] = R[j++];
 
+	// no memory leaks here
         delete[] L;
 	delete[] R;
 }
 
-/* l is for left index and r is right index of the 
-   sub-array of arr to be sorted */
+/* Recursive mergeSort algorithm for array
+ * l is for left index and r is right index of the 
+ * sub-array of arr to be sorted 
+ */
 void mergeSort(std::pair<int, long> arr[], int l, int r)
 {
 	if (l < r)
@@ -181,6 +232,11 @@ void mergeSort(std::pair<int, long> arr[], int l, int r)
 	}
 }
 
+/* Counts the number of "s" characters in a line and
+ * returns a pair consisting of the number of "s"
+ * characters in the line along with the position of
+ * the beginning of the line in the original input file.
+ */
 std::pair<int, long> process(char * line, long position)
 {
 	unsigned int length = strlen(line);
@@ -195,7 +251,7 @@ std::pair<int, long> process(char * line, long position)
 }    
 
 // Using a merge-sort algorithm, create the partitions 
-// and divide them evenly among the output files 
+// and divide them among the output files 
 void createPartitions(const char* inFile, int runSize, int partitions)
 {
 	// For big input file 
@@ -233,14 +289,21 @@ void createPartitions(const char* inFile, int runSize, int partitions)
 		// write run_size elements into arr from input file 
 		for (i = 0; i < numEntries; i++)
 		{
+			// position of the beginning of the line
+			// in the original input file
 			position = ftell(in);
-
+                        
+                        // if we reach EOF in the original input
+			// file, then break
 			if (getline(&line, &len, in) == -1)
 			{
 				moreInput = false;
 				break;
 			}
 
+			// process the line and store the pair
+			// consisting of its number of s characters
+			// and its position in the array
 			std::pair<int, long> sNumfPos = process(line, position);
 			arr[i] = sNumfPos;
 		}
@@ -252,11 +315,15 @@ void createPartitions(const char* inFile, int runSize, int partitions)
 		// can't assume that the loop runs to run_size 
 		// since the last run's length may be less than run_size 
 		for (int j = 0; j < i; j++)
-			fprintf(out[nextOutputFile], "%d %lu ", arr[j].first, arr[j].second);
-
+			fprintf(out[nextOutputFile], "%d %lu ", arr[j].first, 
+					arr[j].second);
+                
+		// move to the next scratch output file when you have filled 
+		// the current one
 		nextOutputFile++;
 	}
 
+	// no memory leaks here
 	free(line);
         delete[] arr;
 
@@ -278,9 +345,10 @@ void customSort(const char* inFile, const char* outFile,
 	createPartitions(inFile, runSize, partitions);
 
 	// Merge the temporary output files using K-way merging 
-	mergeFiles(outFile, inFile, runSize, partitions);
+	kWayMerge(outFile, inFile, runSize, partitions);
 }
 
+// Main Driver
 int main(int argc, char** argv) {
 
 	//Check for Arguments
